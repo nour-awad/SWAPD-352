@@ -1,17 +1,20 @@
 const express = require('express');
-const { getAllBooks, getBookById, addBook, updateBook, deleteBook } = require('./utils');
+const {
+  getAllBooks,
+  getBookById,
+  addBook,
+  updateBook,
+  deleteBook,
+} = require('./book_utils');
 
-const app = express();
-const port = 3000;
+const router = express.Router();
 
-app.use(express.json());
-
-app.get('/books', (req, res) => {
+router.get('/', (req, res) => {
   const books = getAllBooks();
   res.json(books);
 });
 
-app.get('/books/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   const book = getBookById(parseInt(req.params.id));
   if (book) {
     res.json(book);
@@ -20,7 +23,7 @@ app.get('/books/:id', (req, res) => {
   }
 });
 
-app.post('/books', (req, res) => {
+router.post('/', (req, res) => {
   const { title, author } = req.body;
   if (!title || !author) {
     return res.status(400).json({ message: 'Title and author are required' });
@@ -29,7 +32,7 @@ app.post('/books', (req, res) => {
   res.status(201).json(newBook);
 });
 
-app.put('/books/:id', (req, res) => {
+router.put('/:id', (req, res) => {
   const { title, author } = req.body;
   const updatedBook = updateBook(parseInt(req.params.id), title, author);
   if (updatedBook) {
@@ -39,7 +42,7 @@ app.put('/books/:id', (req, res) => {
   }
 });
 
-app.delete('/books/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const isDeleted = deleteBook(parseInt(req.params.id));
   if (isDeleted) {
     res.status(204).send();
@@ -48,6 +51,4 @@ app.delete('/books/:id', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+module.exports = router;

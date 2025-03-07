@@ -1,7 +1,7 @@
-let books = [
-  { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' },
-  { id: 2, title: '1984', author: 'George Orwell' },
-  { id: 3, title: 'To Kill a Mockingbird', author: 'Harper Lee' },
+let book = [
+  { id: 1, title: '7assan w mor2os', author: 'Adel Imam', Borrowed: false },
+  { id: 2, title: 'el zooga 13', author: 'Shadia', Borrowed: false },
+  { id: 3, title: 'Impire M', author: 'Faten Hamama', Borrowed: false },
 ];
 
-module.exports = books;
+module.exports = book;

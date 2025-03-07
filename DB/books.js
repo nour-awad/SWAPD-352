@@ -1,16 +1,21 @@
-const mongoose = require('mongoose');
+const { Client } = require('pg');
 
-mongoose.connect('mongodb://localhost:27017/book_db', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+// PostgreSQL connection configuration
+const client = new Client({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'postgres',
+  password: '1234',
+  port: 5433,
 });
 
-const bookSchema = new mongoose.Schema({
+
+const bookSchema = new client.Schema({
   title: String,
   author: String,
 });
 
-const Book = mongoose.model('Book', bookSchema);
+const Book = client.model('Book', bookSchema);
 
 const getAllBooks = async () => {
   return await Book.find();
