@@ -1,7 +1,6 @@
-
 # E-Library Management System
 
-This is a RESTful API for managing an e-library system. It allows you to perform CRUD operations on books, manage users, and handle borrowing/returning transactions. The application can be used with or without a PostgreSQL database.
+This is a RESTful API for managing an e-library system. It allows you to perform CRUD operations on books. The application can be used with or without a **MongoDB** database.
 
 ---
 
@@ -14,20 +13,8 @@ This is a RESTful API for managing an e-library system. It allows you to perform
   - Update a book
   - Delete a book
 
-- **User Management**:
-  - Get all users
-  - Get a user by ID
-  - Add a new user
-  - Update a user
-  - Delete a user
-
-- **Transaction Management**:
-  - Borrow a book
-  - Return a book
-  - View all transactions
-
 - **Database Integration** (Optional):
-  - PostgreSQL integration for persistent data storage.
+  - MongoDB integration for persistent data storage.
 
 ---
 
@@ -35,7 +22,7 @@ This is a RESTful API for managing an e-library system. It allows you to perform
 
 - Node.js (v14 or higher)
 - npm (Node Package Manager)
-- PostgreSQL (optional, for database integration)
+- MongoDB (optional, for database integration)
 
 ---
 
@@ -64,62 +51,58 @@ This is a RESTful API for managing an e-library system. It allows you to perform
    - Example:
      ```bash
      # Get all books
-     curl http://localhost:3000/books
+     curl http://localhost:3000/book
      ```
 
 ---
 
-### 2. With Database (PostgreSQL)
+### 2. With Database (MongoDB)
 
-1. **Install PostgreSQL**:
-   - Download and install PostgreSQL from the [official website](https://www.postgresql.org/download/).
-   - Set a password for the `postgres` user during installation.
+1. **Install MongoDB**:
+   - Download and install MongoDB from the [official website](https://www.mongodb.com/try/download/community).
+   - Start the MongoDB server (e.g., using `mongod`).
 
 2. **Create a Database**:
-   - Open `psql` or a GUI like pgAdmin.
-   - Run the following SQL commands:
-     ```sql
-     CREATE DATABASE elibrary;
-     \c elibrary;
-     CREATE TABLE books (
-       id SERIAL PRIMARY KEY,
-       title VARCHAR(255) NOT NULL,
-       author VARCHAR(255) NOT NULL,
-       borrowed BOOLEAN DEFAULT false
-     );
+   - Open the MongoDB shell or a GUI like MongoDB Compass.
+   - Create a new database called `elibrary`:
+     ```bash
+     use elibrary
      ```
 
-3. **Seed Initial Data** (Optional):
-   ```sql
-   INSERT INTO books (title, author) VALUES
-     ('7assan w mor2os', 'Adel Imam'),
-     ('el zooga 13', 'Shadia'),
-     ('Let it happen', 'Tame Impala');
-   ```
-
-4. **Update Database Configuration**:
-   - Open `books.js` and update the PostgreSQL connection configuration:
+3. **Update Database Configuration**:
+   - Open `books.js` and update the MongoDB connection configuration:
      ```javascript
-     const client = new Client({
-       user: 'postgres',
-       host: 'localhost',
-       database: 'elibrary',
-       password: '123456', // Replace with your actual password
-       port: 5432, // Replace with your port number
-     });
+     const { MongoClient } = require('mongodb');
+
+     const uri = 'mongodb://localhost:27017'; // MongoDB connection URI
+     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+     let db;
+
+     const connectDB = async () => {
+       try {
+         await client.connect();
+         db = client.db('elibrary');
+         console.log('Connected to MongoDB');
+       } catch (err) {
+         console.error('Error connecting to MongoDB:', err);
+       }
+     };
+
+     connectDB();
      ```
 
-5. **Run the Application**:
+4. **Run the Application**:
    ```bash
    node main.js
    ```
 
-6. **Test the API**:
+5. **Test the API**:
    - Use tools like Postman or `curl` to interact with the API.
    - Example:
      ```bash
      # Add a new book
-     curl -X POST http://localhost:8080/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+     curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
      ```
 
 ---
@@ -133,18 +116,6 @@ This is a RESTful API for managing an e-library system. It allows you to perform
 - **PUT `/books/:id`**: Update a book.
 - **DELETE `/books/:id`**: Delete a book.
 
-### Users
-- **GET `/users`**: Get all users.
-- **GET `/users/:id`**: Get a user by ID.
-- **POST `/users`**: Add a new user.
-- **PUT `/users/:id`**: Update a user.
-- **DELETE `/users/:id`**: Delete a user.
-
-### Transactions
-- **GET `/transactions`**: Get all transactions.
-- **POST `/transactions/borrow`**: Borrow a book.
-- **PUT `/transactions/return/:id`**: Return a book.
-
 ---
 
 ## Example Requests
@@ -152,19 +123,19 @@ This is a RESTful API for managing an e-library system. It allows you to perform
 ### Without Database
 ```bash
 # Get all books
-curl http://localhost:8080/books
+curl http://localhost:3000/book
 
 # Add a new book
-curl -X POST http://localhost:8080/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+curl -X POST http://localhost:3000/book -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
 ```
 
 ### With Database
 ```bash
 # Get all books
-curl http://localhost:8080/books
+curl http://localhost:3000/books
 
-# Borrow a book
-curl -X POST http://localhost:8080/transactions/borrow -H "Content-Type: application/json" -d '{"userId": 1, "bookId": 1}'
+# Add a new book
+curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
 ```
 
 ---
@@ -175,26 +146,19 @@ curl -X POST http://localhost:8080/transactions/borrow -H "Content-Type: applica
 e-library/
 │
 ├── no_DB/
-│   ├── books.js              # Book-related database queries
-│   ├── book_main.js          # Book-related routes
-│   ├── book_utils.js         # Book-related functions
-│   ├── users.js              # User-related database queries
-│   ├── user_main.js          # User-related routes
-│   ├── user_utils.js         # User-related functions
-│   ├── transactions.js       # Transaction-related database queries
-│   ├── transaction_main.js   # Transaction-related routes
-│   ├── transaction_utils.js  # Transaction-related functions
-│   └── server.js             # Main server file
+│   ├── book.js               # Book-related in-memory operations
+│   ├── utils.js              # Book-related functions
+│   └── main.js               # Main server file
 │
 ├── DB/
-│   ├── books.js              # Book-related database queries
-│   ├── users.js              # User-related database queries
-│   └── main.js             # Main server file
+│   ├── books.js              # Book-related MongoDB queries
+│   └── main.js               # Main server file
+│
 ├── README.md                 # Documentation
 ├── LICENSE                   # License
-├── .gitignore                # Project dependencies
+├── .gitignore                # Git ignore file
 ├── node_modules              # Project dependencies
-├── package-lock.json         # Project dependencies
+├── package-lock.json         # Dependency lock file
 └── package.json              # Project dependencies
 ```
 
@@ -203,7 +167,7 @@ e-library/
 ## Dependencies
 
 - **Express.js**: Web framework for Node.js.
-- **pg**: PostgreSQL client for Node.js.
+- **MongoDB**: MongoDB client for Node.js.
 - **Body-parser**: Middleware to parse request bodies.
 
 Install all dependencies using:
@@ -231,7 +195,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments
 
-- Built with ❤️ using Node.js, Express.js, and PostgreSQL.
+- Built with ❤️ using Node.js, Express.js, and MongoDB.
 
 ---
 
