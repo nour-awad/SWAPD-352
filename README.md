@@ -64,7 +64,7 @@ This is a RESTful API for managing an e-library system. It allows you to perform
    - Example:
      ```bash
      # Get all books
-     curl http://localhost:3000/books
+     curl http://localhost:3000/book
      ```
 
 ---
@@ -119,7 +119,7 @@ This is a RESTful API for managing an e-library system. It allows you to perform
    - Example:
      ```bash
      # Add a new book
-     curl -X POST http://localhost:8080/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+     curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "lalaland", "author": "nour khattab"}'
      ```
 
 ---
@@ -152,19 +152,19 @@ This is a RESTful API for managing an e-library system. It allows you to perform
 ### Without Database
 ```bash
 # Get all books
-curl http://localhost:8080/books
+curl http://localhost:3000/book
 
 # Add a new book
-curl -X POST http://localhost:8080/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+curl -X POST http://localhost:3000/book -H "Content-Type: application/json" -d '{"title": "lalaland", "author": "nour khattab"}'
 ```
 
 ### With Database
 ```bash
 # Get all books
-curl http://localhost:8080/books
+curl http://localhost:3000/book
 
 # Borrow a book
-curl -X POST http://localhost:8080/transactions/borrow -H "Content-Type: application/json" -d '{"userId": 1, "bookId": 1}'
+curl -X POST http://localhost:3000/transaction/borrow -H "Content-Type: application/json" -d '{"title": "lalaland", "author": "nour khattab"}'
 ```
 
 ---
