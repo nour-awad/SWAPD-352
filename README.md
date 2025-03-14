@@ -1,189 +1,213 @@
-# E-Library Management System
+# Blog System API
 
-This is a RESTful API for managing an e-library system. It allows you to perform CRUD operations on books. The application can be used with or without a **MongoDB** database.
+A simple RESTful API for managing blog posts and authors. This project uses **PostgreSQL** to store structured author data and **MongoDB** to store unstructured blog post data.
 
 ---
 
 ## Features
 
-- **Book Management**:
-  - Get all books
-  - Get a book by ID
-  - Add a new book
-  - Update a book
-  - Delete a book
+- **Authors**:
 
-- **Database Integration** (Optional):
-  - MongoDB integration for persistent data storage.
+  - Create a new author.
+  - Fetch all authors.
+
+- **Posts**:
+  - Create a new blog post.
+  - Fetch all blog posts.
+  - Update a blog post.
+  - Delete a blog post.
+
+---
+
+## Technologies Used
+
+- **Backend**: Node.js with Express.js
+- **Databases**:
+  - PostgreSQL (for authors)
+  - MongoDB (for posts)
+- **Dependencies**:
+  - `express`: Web framework for Node.js
+  - `pg`: PostgreSQL client for Node.js
+  - `mongodb`: MongoDB client for Node.js
 
 ---
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
-- npm (Node Package Manager)
-- MongoDB (optional, for database integration)
+Before running the project, ensure you have the following installed:
+
+1. **Node.js** (v14 or higher)
+2. **PostgreSQL** (installed and running)
+3. **MongoDB** (installed and running)
 
 ---
 
 ## Setup Instructions
 
-### 1. Without Database (In-Memory Storage)
+1. **Clone the repository**:
 
-1. **Clone the Repository**:
    ```bash
    git clone https://github.com/nour-awad/SWAPD-352.git
    cd SWAPD-352
+   git checkout task-3
    ```
 
-2. **Install Dependencies**:
+2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
-3. **Run the Application**:
-   ```bash
-   node main.js
-   ```
+3. **Set up PostgreSQL**:
 
-4. **Test the API**:
-   - Use tools like [Postman](https://www.postman.com/) or `curl` to interact with the API.
-   - Example:
-     ```bash
-     # Get all books
-     curl http://localhost:3000/book
+   - Create a database named `postgres` (or update the connection string in `blogs.js`).
+   - Create the `authors` table:
+     ```sql
+     CREATE TABLE authors (
+       id SERIAL PRIMARY KEY,
+       name VARCHAR(100) NOT NULL,
+       email VARCHAR(100) NOT NULL
+     );
      ```
 
----
+4. **Set up MongoDB**:
 
-### 2. With Database (MongoDB)
+   - Ensure MongoDB is running locally on `mongodb://127.0.0.1:27017`.
+   - The `posts` collection will be created automatically when the first post is added.
 
-1. **Install MongoDB**:
-   - Download and install MongoDB from the [official website](https://www.mongodb.com/try/download/community).
-   - Start the MongoDB server (e.g., using `mongod`).
+5. **Update database credentials**:
 
-2. **Create a Database**:
-   - Open the MongoDB shell or a GUI like MongoDB Compass.
-   - Create a new database called `elibrary`:
-     ```bash
-     use elibrary
-     ```
-
-3. **Update Database Configuration**:
-   - Open `books.js` and update the MongoDB connection configuration:
+   - Open `blogs.js` and update the PostgreSQL connection details if necessary:
      ```javascript
-     const { MongoClient } = require('mongodb');
-
-     const uri = 'mongodb://localhost:27017'; // MongoDB connection URI
-     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-     let db;
-
-     const connectDB = async () => {
-       try {
-         await client.connect();
-         db = client.db('elibrary');
-         console.log('Connected to MongoDB');
-       } catch (err) {
-         console.error('Error connecting to MongoDB:', err);
-       }
-     };
-
-     connectDB();
+     const pgClient = new Client({
+       user: "postgres", // Replace with your PostgreSQL username
+       host: "localhost",
+       database: "postgres", // Replace with your database name
+       password: "123456", // Replace with your PostgreSQL password
+       port: 5432,
+     });
      ```
 
-4. **Run the Application**:
+6. **Start the server**:
+
    ```bash
-   node main.js
+   node blogs.js
    ```
 
-5. **Test the API**:
-   - Use tools like Postman or `curl` to interact with the API.
-   - Example:
-     ```bash
-     # Add a new book
-     curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
-     ```
+   The server will start on `http://localhost:3000`.
 
 ---
 
 ## API Endpoints
 
-### Books
-- **GET `/books`**: Get all books.
-- **GET `/books/:id`**: Get a book by ID.
-- **POST `/books`**: Add a new book.
-- **PUT `/books/:id`**: Update a book.
-- **DELETE `/books/:id`**: Delete a book.
+### Authors
+
+- **Create an Author**:
+
+  ```bash
+  POST /authors
+  ```
+
+  **Request Body**:
+
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+  ```
+
+- **Fetch All Authors**:
+  ```bash
+  GET /authors
+  ```
+
+---
+
+### Posts
+
+- **Create a Post**:
+
+  ```bash
+  POST /posts
+  ```
+
+  **Request Body**:
+
+  ```json
+  {
+    "title": "My First Post",
+    "content": "This is a blog post.",
+    "authorId": 1
+  }
+  ```
+
+- **Fetch All Posts**:
+
+  ```bash
+  GET /posts
+  ```
+
+- **Update a Post**:
+
+  ```bash
+  PUT /posts/:id
+  ```
+
+  **Request Body**:
+
+  ```json
+  {
+    "title": "Updated Title",
+    "content": "Updated content.",
+    "authorId": 1
+  }
+  ```
+
+- **Delete a Post**:
+  ```bash
+  DELETE /posts/:id
+  ```
 
 ---
 
 ## Example Requests
 
-### Without Database
+### Create an Author
+
 ```bash
-# Get all books
-curl http://localhost:3000/book
-
-# Add a new book
-curl -X POST http://localhost:3000/book -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+curl -X POST http://localhost:3000/authors \
+  -H "Content-Type: application/json" \
+  -d '{"name": "John Doe", "email": "john@example.com"}'
 ```
 
-### With Database
+### Create a Post
+
 ```bash
-# Get all books
-curl http://localhost:3000/books
-
-# Add a new book
-curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+curl -X POST http://localhost:3000/posts \
+  -H "Content-Type: application/json" \
+  -d '{"title": "My First Post", "content": "This is a blog post.", "authorId": 1}'
 ```
 
----
+### Fetch All Posts
 
-## Folder Structure
-
-```
-e-library/
-│
-├── no_DB/
-│   ├── book.js               # Book-related in-memory operations
-│   ├── utils.js              # Book-related functions
-│   └── main.js               # Main server file
-│
-├── DB/
-│   ├── books.js              # Book-related MongoDB queries
-│   └── main.js               # Main server file
-│
-├── README.md                 # Documentation
-├── LICENSE                   # License
-├── .gitignore                # Git ignore file
-├── node_modules              # Project dependencies
-├── package-lock.json         # Dependency lock file
-└── package.json              # Project dependencies
-```
-
----
-
-## Dependencies
-
-- **Express.js**: Web framework for Node.js.
-- **MongoDB**: MongoDB client for Node.js.
-- **Body-parser**: Middleware to parse request bodies.
-
-Install all dependencies using:
 ```bash
-npm install
+curl http://localhost:3000/posts
 ```
 
----
+### Update a Post
 
-## Contributing
+```bash
+curl -X PUT http://localhost:3000/posts/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Updated Title", "content": "Updated content.", "authorId": 1}'
+```
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a pull request.
+### Delete a Post
+
+```bash
+curl -X DELETE http://localhost:3000/posts/1
+```
 
 ---
 
@@ -193,10 +217,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-## Acknowledgments
+## Contributing
 
-- Built with ❤️ using Node.js, Express.js, and MongoDB.
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ---
 
-Enjoy building and using your e-library management system! 🚀
+## Author
+
+Nour Awad  
+https://github.com/nour-awad  
+nour.awad094@gmail.com
