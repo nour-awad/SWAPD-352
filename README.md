@@ -1,202 +1,179 @@
-# E-Library Management System
+# Authentication API with Express.js
 
-This is a RESTful API for managing an e-library system. It allows you to perform CRUD operations on books. The application can be used with or without a **MongoDB** database.
+![Node.js](https://img.shields.io/badge/Node.js-18.x-blue)
+![Express](https://img.shields.io/badge/Express-4.x-lightblue)
+![JWT](https://img.shields.io/badge/JWT-Authentication-pink)
 
----
+A secure authentication and authorization system built with Express.js featuring JWT authentication, role-based access control (RBAC), and password reset functionality.
 
 ## Features
 
-- **Book Management**:
-  - Get all books
-  - Get a book by ID
-  - Add a new book
-  - Update a book
-  - Delete a book
+- ✅ User registration and login
+- ✅ Password hashing with bcrypt
+- ✅ JWT authentication with access and refresh tokens
+- ✅ Role-based access control (user, moderator, admin)
+- ✅ Protected and public routes
+- ✅ User profile management
+- ✅ Password reset flow
+- ✅ Rate limiting for auth routes
+- ✅ Persistent storage with lowdb
 
-- **Database Integration** (Optional):
-  - MongoDB integration for persistent data storage.
+## Table of Contents
 
----
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [API Endpoints](#api-endpoints)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [Security](#security)
+- [License](#license)
 
-## Prerequisites
+## Installation
 
-- Node.js (v14 or higher)
-- npm (Node Package Manager)
-- MongoDB (optional, for database integration)
+1. Clone the repository:
 
----
-
-## Setup Instructions
-
-### 1. Without Database (In-Memory Storage)
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/nour-awad/SWAPD-352.git
-   cd SWAPD-352
-   ```
-
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Run the Application**:
-   ```bash
-   node main.js
-   ```
-
-4. **Test the API**:
-   - Use tools like [Postman](https://www.postman.com/) or `curl` to interact with the API.
-   - Example:
-     ```bash
-     # Get all books
-     curl http://localhost:3000/book
-     ```
-
----
-
-### 2. With Database (MongoDB)
-
-1. **Install MongoDB**:
-   - Download and install MongoDB from the [official website](https://www.mongodb.com/try/download/community).
-   - Start the MongoDB server (e.g., using `mongod`).
-
-2. **Create a Database**:
-   - Open the MongoDB shell or a GUI like MongoDB Compass.
-   - Create a new database called `elibrary`:
-     ```bash
-     use elibrary
-     ```
-
-3. **Update Database Configuration**:
-   - Open `books.js` and update the MongoDB connection configuration:
-     ```javascript
-     const { MongoClient } = require('mongodb');
-
-     const uri = 'mongodb://localhost:27017'; // MongoDB connection URI
-     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-     let db;
-
-     const connectDB = async () => {
-       try {
-         await client.connect();
-         db = client.db('elibrary');
-         console.log('Connected to MongoDB');
-       } catch (err) {
-         console.error('Error connecting to MongoDB:', err);
-       }
-     };
-
-     connectDB();
-     ```
-
-4. **Run the Application**:
-   ```bash
-   node main.js
-   ```
-
-5. **Test the API**:
-   - Use tools like Postman or `curl` to interact with the API.
-   - Example:
-     ```bash
-     # Add a new book
-     curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
-     ```
-
----
-
-## API Endpoints
-
-### Books
-- **GET `/books`**: Get all books.
-- **GET `/books/:id`**: Get a book by ID.
-- **POST `/books`**: Add a new book.
-- **PUT `/books/:id`**: Update a book.
-- **DELETE `/books/:id`**: Delete a book.
-
----
-
-## Example Requests
-
-### Without Database
 ```bash
-# Get all books
-curl http://localhost:3000/book
-
-# Add a new book
-curl -X POST http://localhost:3000/book -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
+git clone https://github.com/nour-awad/SWAPD-352.git
+cd SWAPD-352
+git checkout task-6
 ```
 
-### With Database
-```bash
-# Get all books
-curl http://localhost:3000/books
+2. Install dependencies:
 
-# Add a new book
-curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "New Author"}'
-```
-
----
-
-## Folder Structure
-
-```
-e-library/
-│
-├── no_DB/
-│   ├── book.js               # Book-related in-memory operations
-│   ├── utils.js              # Book-related functions
-│   └── main.js               # Main server file
-│
-├── DB/
-│   ├── books.js              # Book-related MongoDB queries
-│   └── main.js               # Main server file
-│
-├── README.md                 # Documentation
-├── LICENSE                   # License
-├── .gitignore                # Git ignore file
-├── node_modules              # Project dependencies
-├── package-lock.json         # Dependency lock file
-└── package.json              # Project dependencies
-```
-
----
-
-## Dependencies
-
-- **Express.js**: Web framework for Node.js.
-- **MongoDB**: MongoDB client for Node.js.
-- **Body-parser**: Middleware to parse request bodies.
-
-Install all dependencies using:
 ```bash
 npm install
 ```
 
----
+3. Create a `.env` file in the root directory with your environment variables (see [Configuration](#configuration)).
 
-## Contributing
+4. Start the server:
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a pull request.
+```bash
+npm start
+```
 
----
+## Configuration
+
+Create a `.env` file with the following variables:
+
+```
+JWT_SECRET=your_strong_jwt_secret_here
+REFRESH_SECRET=your_strong_refresh_secret_here
+PORT=3000
+EMAIL_USER=your@gmail.com
+EMAIL_PASS=your_app_password
+```
+
+**Note:** For Gmail, you may need to:
+
+- Use an App Password if you have 2FA enabled
+- Allow less secure apps (not recommended for production)
+
+## API Endpoints
+
+### Authentication
+
+| Endpoint                      | Method | Description              | Access                 |
+| ----------------------------- | ------ | ------------------------ | ---------------------- |
+| `/api/register`               | POST   | Register a new user      | Public                 |
+| `/api/login`                  | POST   | Login with credentials   | Public                 |
+| `/api/token`                  | POST   | Refresh access token     | Requires refresh token |
+| `/api/logout`                 | DELETE | Invalidate refresh token | Requires refresh token |
+| `/api/password-reset/request` | POST   | Request password reset   | Public                 |
+| `/api/password-reset/confirm` | POST   | Confirm password reset   | Public                 |
+
+### User Management
+
+| Endpoint                    | Method | Description         | Access        |
+| --------------------------- | ------ | ------------------- | ------------- |
+| `/api/users/profile`        | GET    | Get user profile    | Authenticated |
+| `/api/users/profile`        | PUT    | Update user profile | Authenticated |
+| `/api/users/:username/role` | PUT    | Update user role    | Admin only    |
+
+### Protected Routes
+
+| Endpoint         | Method | Description        | Access        |
+| ---------------- | ------ | ------------------ | ------------- |
+| `/api/public`    | GET    | Public endpoint    | Public        |
+| `/api/protected` | GET    | Protected endpoint | Authenticated |
+| `/api/moderator` | GET    | Moderator endpoint | Moderator+    |
+| `/api/admin`     | GET    | Admin endpoint     | Admin only    |
+
+## Testing
+
+You can test the API using Postman, cURL, or any HTTP client.
+
+### Example Requests
+
+**Register a new user:**
+
+```bash
+curl -X POST http://localhost:3000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "Password1!",
+    "role": "user"
+  }'
+```
+
+**Login:**
+
+```bash
+curl -X POST http://localhost:3000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "testuser",
+    "password": "Password1!"
+  }'
+```
+
+**Access protected route:**
+
+```bash
+curl -X GET http://localhost:3000/api/protected \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## Project Structure
+
+```
+src/
+├── config/               # Configuration files
+├── controllers/          # Route controllers
+├── middlewares/          # Express middlewares
+├── models/               # Database models
+├── routes/               # Route definitions
+├── services/             # Business logic services
+├── utils/                # Utility functions
+├── app.js                # Express application
+├── server.js             # Server entry point
+├── db.json               # Database file (auto-generated)
+└── .env                  # Environment variables
+```
+
+## Security
+
+This implementation includes several security measures:
+
+- Password hashing with bcrypt
+- JWT with short-lived access tokens
+- Secure HTTP headers
+- Rate limiting on auth endpoints
+- Input validation
+- Secure error handling
+- Refresh token rotation
+- Password reset tokens with expiration
+
+For production use, consider adding:
+
+- HTTPS
+- CORS restrictions
+- More advanced rate limiting
+- Logging and monitoring
+- Regular security audits
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- Built with ❤️ using Node.js, Express.js, and MongoDB.
-
----
-
-Enjoy building and using your e-library management system! 🚀
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
