@@ -1,3 +1,18 @@
 package-lock.json
 package.json
 node_modules
+.env
+coverage/
+logs
+*.log
+npm-debug.log*
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.code-workspace
+.vs/ 
